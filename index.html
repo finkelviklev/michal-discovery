@@ -1556,7 +1556,7 @@
       });
       // Multi-page form: Google saves answers blank unless it knows every section page was visited.
       fd.append('fvv', '1');
-      fd.append('pageHistory', '0,1,2,3,4,5,6,7,8,9,10,11,12');
+      fd.append('pageHistory', '0');
 
       fetch(FORM_ACTION_URL, { method: 'POST', mode: 'no-cors', body: fd })
         .then(showThanks)
