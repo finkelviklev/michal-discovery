@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discovery Questionnaire · Michal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #eef1e9;
+      --ink: #16231b;
+      --ink-soft: #3d4a40;
+      --ink-faint: #74836f;
+      --rule: rgba(22, 35, 27, 0.14);
+      --rule-soft: rgba(22, 35, 27, 0.07);
+      --sun: #c3a04d;
+      --sky: #7fa8c9;
+      --leaf: #4f7a4d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--rule-soft);
+      z-index: 20;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--leaf), var(--sky));
+      width: 0;
+      transition: width 0.45s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 80px 8vw;
+      position: relative;
+    }
+    .screen.active { display: flex; }
+    .screen.form-screen {
+      align-items: flex-start;
+      padding-top: 84px;
+      padding-bottom: 88px;
+    }
+    .container {
+      max-width: 820px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+      margin: 0 auto;
+    }
+
+    /* ── Lobby: bright color-splash hero ───────────────────────── */
+    .screen.lobby {
+      align-items: center;
+      padding: 80px 8vw;
+      color: var(--ink);
+      background: linear-gradient(160deg, #fbfcf8 0%, #f4f6ef 55%, #eef1f6 100%);
+      overflow: hidden;
+    }
+    .splashes {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .splash {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(64px);
+      will-change: transform;
+    }
+    .splash.blue {
+      width: 48vw; height: 48vw; min-width: 340px; min-height: 340px;
+      top: -12%; left: -8%;
+      background: radial-gradient(circle, rgba(120, 165, 222, 0.85), rgba(120, 165, 222, 0) 70%);
+      animation: drift-a 16s ease-in-out infinite alternate;
+    }
+    .splash.purple {
+      width: 44vw; height: 44vw; min-width: 320px; min-height: 320px;
+      bottom: -16%; right: -8%;
+      background: radial-gradient(circle, rgba(172, 140, 222, 0.8), rgba(172, 140, 222, 0) 70%);
+      animation: drift-b 21s ease-in-out infinite alternate;
+    }
+    .splash.yellow {
+      width: 38vw; height: 38vw; min-width: 280px; min-height: 280px;
+      top: 24%; right: 18%;
+      background: radial-gradient(circle, rgba(245, 214, 118, 0.9), rgba(245, 214, 118, 0) 70%);
+      animation: drift-c 18s ease-in-out infinite alternate;
+    }
+    @keyframes drift-a {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(12vw, 8vh) scale(1.15); }
+      100% { transform: translate(4vw, -6vh) scale(0.95); }
+    }
+    @keyframes drift-b {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(-10vw, -6vh) scale(1.1); }
+      100% { transform: translate(-4vw, 8vh) scale(0.9); }
+    }
+    @keyframes drift-c {
+      0%   { transform: translate(0, 0) scale(1); }
+      50%  { transform: translate(-8vw, 10vh) scale(1.2); }
+      100% { transform: translate(6vw, 4vh) scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .splash { animation: none !important; }
+    }
+    .lobby .container {
+      z-index: 2;
+      padding: 0 8vw;
+      max-width: 940px;
+    }
+    .eyebrow {
+      font-family: 'Manrope', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--leaf);
+      margin-bottom: 28px;
+    }
+    .greeting {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(54px, 8vw, 104px);
+      font-weight: 400;
+      line-height: 1.02;
+      letter-spacing: -0.015em;
+      margin-bottom: 32px;
+    }
+    .greeting em { font-style: italic; }
+    .lobby .body-text p {
+      font-size: clamp(19px, 1.6vw, 23px);
+      line-height: 1.62;
+      color: var(--ink);
+      margin-bottom: 20px;
+      max-width: 680px;
+    }
+
+    .body-text p {
+      font-size: clamp(19px, 1.5vw, 22px);
+      line-height: 1.62;
+      color: var(--ink);
+      margin-bottom: 22px;
+      max-width: 680px;
+    }
+
+    /* ── Section headers ───────────────────────────────────────── */
+    .section-header { margin-bottom: 52px; }
+    .section-number {
+      display: block;
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--leaf);
+      margin-bottom: 26px;
+    }
+    .section-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(44px, 6vw, 72px);
+      font-weight: 400;
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+      margin-bottom: 22px;
+    }
+    .section-title em { font-style: italic; }
+    .section-intro {
+      font-size: 20px;
+      color: var(--ink-soft);
+      max-width: 600px;
+    }
+
+    .block { margin-bottom: 56px; }
+    .block-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(27px, 2.8vw, 34px);
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+
+    .field { margin-bottom: 34px; }
+    .field-number {
+      display: block;
+      font-family: 'Manrope', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+    }
+    .field-label {
+      display: block;
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+    .field-helper {
+      display: block;
+      font-size: 16px;
+      color: var(--ink-faint);
+      font-style: italic;
+      margin-bottom: 14px;
+      max-width: 600px;
+    }
+
+    .field input[type="text"],
+    .field input[type="email"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--rule);
+      padding: 18px 20px;
+      border-radius: 12px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 19px;
+      color: var(--ink);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .field input[type="text"]:focus,
+    .field input[type="email"]:focus {
+      outline: none;
+      border-color: var(--leaf);
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: var(--ink-faint);
+      opacity: 0.6;
+    }
+    .field textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--rule);
+      padding: 18px 20px;
+      min-height: 130px;
+      border-radius: 12px;
+      font-family: 'Manrope', sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--ink);
+      resize: vertical;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .field textarea.large { min-height: 210px; }
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--leaf);
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .field-label + input,
+    .field-label + textarea { margin-top: 12px; }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .option {
+      display: inline-flex;
+      align-items: center;
+      padding: 14px 24px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: all 0.15s ease;
+      background: rgba(255, 255, 255, 0.4);
+      user-select: none;
+    }
+    .option:hover { border-color: var(--leaf); }
+    .option input { position: absolute; opacity: 0; pointer-events: none; }
+    .option:has(input:checked) {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .cta-row {
+      margin-top: 52px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 36px;
+      background: var(--ink);
+      color: var(--bg);
+      font-family: 'Manrope', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      text-decoration: none;
+    }
+    .cta:hover { transform: translateX(4px); background: #0c1710; }
+    .cta-arrow {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      line-height: 1;
+    }
+    .cta[disabled] { opacity: 0.55; cursor: default; transform: none; }
+    .meta {
+      font-size: 15px;
+      color: var(--ink-faint);
+      letter-spacing: 0.02em;
+    }
+
+    .form-nav {
+      margin-top: 60px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+      padding-top: 40px;
+      border-top: 1px solid var(--rule);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      padding: 13px 26px;
+      font-size: 16px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 500;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .back-link:hover { border-color: var(--leaf); }
+    .back-link-arrow { font-family: 'Manrope', sans-serif; font-size: 17px; line-height: 1; }
+
+    .review-stats {
+      display: flex;
+      gap: 48px;
+      margin: 36px 0 52px;
+      flex-wrap: wrap;
+    }
+    .stat { display: flex; flex-direction: column; gap: 8px; }
+    .stat-value {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 52px;
+      line-height: 1;
+      font-weight: 500;
+    }
+    .stat-label {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .review-note {
+      margin-top: 20px;
+      font-size: 16px;
+      color: var(--ink-faint);
+      max-width: 620px;
+    }
+    .email-link {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    /* ── Overlay ───────────────────────────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(238, 241, 233, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.55s ease;
+      padding: 40px 24px;
+    }
+    .overlay.visible { opacity: 1; pointer-events: auto; }
+    .overlay-card {
+      max-width: 620px;
+      text-align: center;
+      transform: translateY(24px);
+      opacity: 0;
+      transition: transform 0.7s cubic-bezier(0.2, 0, 0, 1), opacity 0.7s ease;
+      transition-delay: 0.15s;
+    }
+    .overlay.visible .overlay-card { transform: translateY(0); opacity: 1; }
+    .overlay-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(56px, 8vw, 92px);
+      font-weight: 400;
+      line-height: 1.03;
+      letter-spacing: -0.015em;
+      margin-bottom: 32px;
+    }
+    .overlay-title em { font-style: italic; }
+    .overlay-body {
+      font-size: clamp(19px, 1.6vw, 22px);
+      line-height: 1.62;
+      color: var(--ink);
+      max-width: 520px;
+      margin: 0 auto 18px;
+    }
+    .overlay-meta {
+      font-size: 14px;
+      color: var(--ink-faint);
+      letter-spacing: 0.06em;
+      margin-top: 40px;
+      text-transform: uppercase;
+    }
+    body.overlay-open { overflow: hidden; }
+
+    @media (max-width: 640px) {
+      body { font-size: 18px; }
+      .screen { padding: 60px 24px; }
+      .screen.form-screen { padding-top: 68px; padding-bottom: 80px; }
+      .lobby .container { padding: 0 24px 8vh; }
+      .section-header { margin-bottom: 42px; }
+      .block { margin-bottom: 44px; }
+      .field { margin-bottom: 28px; }
+      .form-nav { flex-direction: column; align-items: stretch; }
+      .form-nav .cta { width: 100%; justify-content: center; }
+      .cta-row { margin-top: 38px; gap: 18px; }
+      .review-stats { gap: 32px; }
+      .stat-value { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><div class="progress-fill"></div></div>
+
+  <main>
+    <!-- LOBBY -->
+    <section class="screen lobby active" id="lobby" data-section="0">
+      <div class="splashes" aria-hidden="true">
+        <span class="splash blue"></span>
+        <span class="splash purple"></span>
+        <span class="splash yellow"></span>
+      </div>
+      <div class="container">
+        <p class="eyebrow">Discovery · A conversation before we build</p>
+        <h1 class="greeting">Hi <span id="greeting-name">Michal</span>,<br />let's find <em>the shape</em> of it.</h1>
+        <div class="body-text">
+          <p>You have something real here — a personal brand assessment that helps people see themselves clearly. Before we design or build anything, we want to understand your vision, your user, and what success looks like for you.</p>
+          <p>This takes about 25–30 minutes. There are no wrong answers, and the unknowns are useful too — those are exactly what we'll figure out together. By the end, we'll share a clear picture of what we're building.</p>
+        </div>
+        <div class="cta-row">
+          <button class="cta" id="begin-btn" type="button">
+            Let's begin
+            <span class="cta-arrow">&rarr;</span>
+          </button>
+          <span class="meta">12 sections · about 25 minutes · your progress saves automatically</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1 -->
+    <section class="screen form-screen" id="section-1" data-section="1">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">01 / 12</span>
+          <h2 class="section-title">About you<br /><em>and the vision</em></h2>
+          <p class="section-intro">A little context, and the spark behind the idea.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <h3 class="block-title">You</h3>
+          <div class="field">
+            <span class="field-number">01</span>
+            <label class="field-label" for="q_full_name">Your full name</label>
+            <input type="text" id="q_full_name" name="q_full_name" autocomplete="name" placeholder="Type your answer" />
+          </div>
+          <div class="field">
+            <span class="field-number">02</span>
+            <label class="field-label" for="q_role">Your role or title</label>
+            <input type="text" id="q_role" name="q_role" placeholder="Type your answer" />
+          </div>
+          <div class="field">
+            <span class="field-number">03</span>
+            <label class="field-label" for="q_email">Email</label>
+            <input type="email" id="q_email" name="q_email" autocomplete="email" placeholder="Type your answer" />
+          </div>
+          <div class="field">
+            <span class="field-number">04</span>
+            <label class="field-label" for="q_location">Country and city</label>
+            <span class="field-helper">So we know your timezone.</span>
+            <input type="text" id="q_location" name="q_location" placeholder="Type your answer" />
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">The spark</h3>
+          <div class="field">
+            <span class="field-number">05</span>
+            <label class="field-label" for="q_one_line">In one line, what do you want to build?</label>
+            <span class="field-helper">Don't worry about being pitch-perfect.</span>
+            <textarea id="q_one_line" name="q_one_line" rows="2" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">06</span>
+            <label class="field-label" for="q_spark">What sparked this idea?</label>
+            <span class="field-helper">A personal experience, a conversation, something you kept noticing?</span>
+            <textarea id="q_spark" name="q_spark" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">07</span>
+            <label class="field-label" for="q_why_underdeveloped">You feel this space isn't developed enough. What's missing today?</label>
+            <textarea id="q_why_underdeveloped" name="q_why_underdeveloped" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">08</span>
+            <label class="field-label" for="q_why_now">Why now?</label>
+            <span class="field-helper">What's changed in culture, technology, or your own life that makes this the moment?</span>
+            <textarea id="q_why_now" name="q_why_now" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section class="screen form-screen" id="section-2" data-section="2">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">02 / 12</span>
+          <h2 class="section-title">The concept<br /><em>in plain words</em></h2>
+          <p class="section-intro">What it actually is, and what a person gets from it.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">09</span>
+            <label class="field-label" for="q_what_is_it">In your own words, what is a "personal brand assessment"?</label>
+            <span class="field-helper">What does it do for a person?</span>
+            <textarea id="q_what_is_it" name="q_what_is_it" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">10</span>
+            <label class="field-label" for="q_user_walks_away">When someone finishes, what do they walk away with?</label>
+            <textarea id="q_user_walks_away" name="q_user_walks_away" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">11</span>
+            <label class="field-label" for="q_transformation">What changes for them after using it?</label>
+            <span class="field-helper">The before and the after.</span>
+            <textarea id="q_transformation" name="q_transformation" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">12</span>
+            <label class="field-label" for="q_one_sentence_user">If a user described it to a friend in one sentence, what would you want them to say?</label>
+            <textarea id="q_one_sentence_user" name="q_one_sentence_user" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="block-title">Flavour, not just a title</h3>
+          <div class="field">
+            <span class="field-number">13</span>
+            <label class="field-label" for="q_flavour">You've described this as capturing a person's "flavour" — who they are, not just what they do. Say more.</label>
+            <span class="field-helper">That personal, deep quality that goes beyond a job or a role.</span>
+            <textarea id="q_flavour" name="q_flavour" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">14</span>
+            <span class="field-label">How much is this about career, versus the whole person?</span>
+            <div class="options" role="radiogroup" aria-label="Scope and depth">
+              <label class="option"><input type="radio" name="q_scope_depth" value="Mostly professional and career" /> Mostly professional and career</label>
+              <label class="option"><input type="radio" name="q_scope_depth" value="A blend — career grounded in who you are" /> A blend — career grounded in who you are</label>
+              <label class="option"><input type="radio" name="q_scope_depth" value="Mostly the whole person — character, values, identity" /> Mostly the whole person</label>
+              <label class="option"><input type="radio" name="q_scope_depth" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">15</span>
+            <label class="field-label" for="q_principles">What deeper parts of a person should it reflect?</label>
+            <span class="field-helper">Their principles, values, what they stand for — the things beneath the professional surface.</span>
+            <textarea id="q_principles" name="q_principles" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section class="screen form-screen" id="section-3" data-section="3">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">03 / 12</span>
+          <h2 class="section-title">Learning<br /><em>from Marc</em></h2>
+          <p class="section-intro">Marc's work, and how it fits into yours.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">16</span>
+            <label class="field-label" for="q_marc_what_worked">What about Marc's work resonates most with you?</label>
+            <span class="field-helper">In your own words.</span>
+            <textarea id="q_marc_what_worked" name="q_marc_what_worked" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">17</span>
+            <label class="field-label" for="q_marc_borrow">What do you want to learn or borrow from how he built his?</label>
+            <textarea id="q_marc_borrow" name="q_marc_borrow" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">18</span>
+            <span class="field-label">How is Marc involved in your product?</span>
+            <div class="options" role="radiogroup" aria-label="Marc involvement">
+              <label class="option"><input type="radio" name="q_marc_relationship" value="Coaching and guiding me" /> Coaching and guiding me</label>
+              <label class="option"><input type="radio" name="q_marc_relationship" value="Co-creator and partner in the product" /> Co-creator and partner</label>
+              <label class="option"><input type="radio" name="q_marc_relationship" value="Licensing his framework or method" /> Licensing his framework</label>
+              <label class="option"><input type="radio" name="q_marc_relationship" value="Inspiration — I'm building my own" /> Inspiration — I'm building my own</label>
+              <label class="option"><input type="radio" name="q_marc_relationship" value="Still figuring it out" /> Still figuring it out</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">19</span>
+            <label class="field-label" for="q_marc_ip">Whose methodology sits at the core — his, yours, or a blend?</label>
+            <span class="field-helper">Helpful for us to understand ownership and IP early.</span>
+            <textarea id="q_marc_ip" name="q_marc_ip" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">20</span>
+            <label class="field-label" for="q_your_framework">Do you already have your own framework or archetypes in mind?</label>
+            <span class="field-helper">Even a rough sketch helps. It's fine if not yet.</span>
+            <textarea id="q_your_framework" name="q_your_framework" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section class="screen form-screen" id="section-4" data-section="4">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">04 / 12</span>
+          <h2 class="section-title">The assessment<br /><em>itself</em></h2>
+          <p class="section-intro">The heart of it — how a person moves through the experience.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">21</span>
+            <span class="field-label">Which best describes the core experience?</span>
+            <div class="options" role="radiogroup" aria-label="Core experience">
+              <label class="option"><input type="radio" name="q_format_type" value="A quiz or questionnaire that produces a result" /> A quiz that produces a result</label>
+              <label class="option"><input type="radio" name="q_format_type" value="An in-depth assessment with a detailed report" /> An in-depth assessment + report</label>
+              <label class="option"><input type="radio" name="q_format_type" value="A guided course or program" /> A guided course or program</label>
+              <label class="option"><input type="radio" name="q_format_type" value="A coaching tool" /> A coaching tool</label>
+              <label class="option"><input type="radio" name="q_format_type" value="Not sure yet — help me decide" /> Not sure — help me decide</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">22</span>
+            <span class="field-label">Roughly how many questions should a user answer?</span>
+            <div class="options" role="radiogroup" aria-label="Number of questions">
+              <label class="option"><input type="radio" name="q_num_questions" value="Short — 5 to 10 questions" /> Short — 5 to 10</label>
+              <label class="option"><input type="radio" name="q_num_questions" value="Medium — 10 to 25" /> Medium — 10 to 25</label>
+              <label class="option"><input type="radio" name="q_num_questions" value="Long and in-depth — 25 to 50" /> Long — 25 to 50</label>
+              <label class="option"><input type="radio" name="q_num_questions" value="Adaptive — it varies per person" /> Adaptive — it varies</label>
+              <label class="option"><input type="radio" name="q_num_questions" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">23</span>
+            <span class="field-label">How do people answer?</span>
+            <span class="field-helper">Pick all that feel right.</span>
+            <div class="options" role="group" aria-label="Input style">
+              <label class="option"><input type="checkbox" name="q_input_style" value="Multiple choice" /> Multiple choice</label>
+              <label class="option"><input type="checkbox" name="q_input_style" value="Sliders and scales" /> Sliders and scales</label>
+              <label class="option"><input type="checkbox" name="q_input_style" value="Choosing between images" /> Choosing between images</label>
+              <label class="option"><input type="checkbox" name="q_input_style" value="Free text writing" /> Free text writing</label>
+              <label class="option"><input type="checkbox" name="q_input_style" value="Voice" /> Voice</label>
+              <label class="option"><input type="checkbox" name="q_input_style" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">24</span>
+            <span class="field-label">Is the experience more visual or more textual?</span>
+            <div class="options" role="radiogroup" aria-label="Visual or textual">
+              <label class="option"><input type="radio" name="q_visual_or_textual" value="Mostly visual — images, cards, imagery" /> Mostly visual</label>
+              <label class="option"><input type="radio" name="q_visual_or_textual" value="A balance of both" /> A balance of both</label>
+              <label class="option"><input type="radio" name="q_visual_or_textual" value="Mostly textual — words and writing" /> Mostly textual</label>
+              <label class="option"><input type="radio" name="q_visual_or_textual" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">25</span>
+            <label class="field-label" for="q_archetype_style">Do you imagine sorting people into a set of named types or archetypes?</label>
+            <span class="field-helper">If yes, roughly how many, and what kind? If not, what instead?</span>
+            <textarea id="q_archetype_style" name="q_archetype_style" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section class="screen form-screen" id="section-5" data-section="5">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">05 / 12</span>
+          <h2 class="section-title">The result<br /><em>they get</em></h2>
+          <p class="section-intro">The payoff. What's on the screen when they're done.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">26</span>
+            <span class="field-label">What does the result look like?</span>
+            <span class="field-helper">Pick all that apply.</span>
+            <div class="options" role="group" aria-label="Result form">
+              <label class="option"><input type="checkbox" name="q_result_form" value="A type or archetype" /> A type or archetype</label>
+              <label class="option"><input type="checkbox" name="q_result_form" value="A written report" /> A written report</label>
+              <label class="option"><input type="checkbox" name="q_result_form" value="A visual identity or brand board" /> A visual identity / brand board</label>
+              <label class="option"><input type="checkbox" name="q_result_form" value="A score or profile" /> A score or profile</label>
+              <label class="option"><input type="checkbox" name="q_result_form" value="A personalized plan" /> A personalized plan</label>
+              <label class="option"><input type="checkbox" name="q_result_form" value="A shareable card or image" /> A shareable card or image</label>
+              <label class="option"><input type="checkbox" name="q_result_form" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">27</span>
+            <span class="field-label">How deep is the result?</span>
+            <div class="options" role="radiogroup" aria-label="Result depth">
+              <label class="option"><input type="radio" name="q_result_depth" value="Light and shareable" /> Light and shareable</label>
+              <label class="option"><input type="radio" name="q_result_depth" value="Meaningful and personal" /> Meaningful and personal</label>
+              <label class="option"><input type="radio" name="q_result_depth" value="A deep, professional blueprint" /> A deep, professional blueprint</label>
+              <label class="option"><input type="radio" name="q_result_depth" value="A mix" /> A mix</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">28</span>
+            <span class="field-label">Should results be shareable on social media?</span>
+            <div class="options" role="radiogroup" aria-label="Shareable">
+              <label class="option"><input type="radio" name="q_result_shareable" value="Yes — sharing is central" /> Yes — sharing is central</label>
+              <label class="option"><input type="radio" name="q_result_shareable" value="Nice to have" /> Nice to have</label>
+              <label class="option"><input type="radio" name="q_result_shareable" value="No" /> No</label>
+              <label class="option"><input type="radio" name="q_result_shareable" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">29</span>
+            <label class="field-label" for="q_result_example">Paint a picture of the perfect end-screen. What's on it?</label>
+            <textarea id="q_result_example" name="q_result_example" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6 -->
+    <section class="screen form-screen" id="section-6" data-section="6">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">06 / 12</span>
+          <h2 class="section-title">The AI<br /><em>companion</em></h2>
+          <p class="section-intro">Whether people can keep a conversation going after their result.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">30</span>
+            <span class="field-label">Do you want an AI chat companion in the product?</span>
+            <div class="options" role="radiogroup" aria-label="Chat companion">
+              <label class="option"><input type="radio" name="q_chat_include" value="Yes — central to the product" /> Yes — central to the product</label>
+              <label class="option"><input type="radio" name="q_chat_include" value="Yes — as a supporting feature" /> Yes — a supporting feature</label>
+              <label class="option"><input type="radio" name="q_chat_include" value="Maybe, open to it" /> Maybe, open to it</label>
+              <label class="option"><input type="radio" name="q_chat_include" value="No" /> No</label>
+              <label class="option"><input type="radio" name="q_chat_include" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">31</span>
+            <label class="field-label" for="q_chat_identity">Whose identity would the chat speak as?</label>
+            <span class="field-helper">Yours, a coach persona, the user's future self, something else?</span>
+            <textarea id="q_chat_identity" name="q_chat_identity" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">32</span>
+            <label class="field-label" for="q_chat_purpose">What should people be able to do in that chat?</label>
+            <span class="field-helper">Ask questions, go deeper on their result, get advice, be coached?</span>
+            <textarea id="q_chat_purpose" name="q_chat_purpose" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7 -->
+    <section class="screen form-screen" id="section-7" data-section="7">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">07 / 12</span>
+          <h2 class="section-title">Who<br /><em>it's for</em></h2>
+          <p class="section-intro">The person on the other side of the screen.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">33</span>
+            <label class="field-label" for="q_primary_user">Describe your primary user</label>
+            <span class="field-helper">Who are they, what's their life like, what do they care about?</span>
+            <textarea id="q_primary_user" name="q_primary_user" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">34</span>
+            <label class="field-label" for="q_user_moment">What's happening in their life that brings them to this?</label>
+            <span class="field-helper">A career change, launching something, feeling stuck, wanting visibility?</span>
+            <textarea id="q_user_moment" name="q_user_moment" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">35</span>
+            <span class="field-label">How well do you know these users today?</span>
+            <div class="options" role="radiogroup" aria-label="User knowledge">
+              <label class="option"><input type="radio" name="q_user_knowledge" value="I am one of them" /> I am one of them</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="I've talked to many of them" /> I've talked to many</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="I've talked to a few" /> I've talked to a few</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="Observations but no direct conversations yet" /> Observations only</label>
+              <label class="option"><input type="radio" name="q_user_knowledge" value="A hypothesis I want to test" /> A hypothesis to test</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">36</span>
+            <label class="field-label" for="q_secondary_user">Any secondary or adjacent audience?</label>
+            <span class="field-helper">Optional. Coaches, companies, teams?</span>
+            <textarea id="q_secondary_user" name="q_secondary_user" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">37</span>
+            <label class="field-label" for="q_reach">Where do these people already gather — how will you reach them?</label>
+            <textarea id="q_reach" name="q_reach" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8 -->
+    <section class="screen form-screen" id="section-8" data-section="8">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">08 / 12</span>
+          <h2 class="section-title">Format<br /><em>and platform</em></h2>
+          <p class="section-intro">The big one. When you picture the finished product, what is it?</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">38</span>
+            <span class="field-label">When you picture the finished product, what is it?</span>
+            <span class="field-helper">Pick all that fit. It's completely fine to pick "not sure" — that's what we're here to figure out.</span>
+            <div class="options" role="group" aria-label="Product form">
+              <label class="option"><input type="checkbox" name="q_product_form" value="A website" /> A website</label>
+              <label class="option"><input type="checkbox" name="q_product_form" value="A web app you log into" /> A web app you log into</label>
+              <label class="option"><input type="checkbox" name="q_product_form" value="A mobile app (iOS or Android)" /> A mobile app</label>
+              <label class="option"><input type="checkbox" name="q_product_form" value="A set of tools or a dashboard" /> A set of tools / dashboard</label>
+              <label class="option"><input type="checkbox" name="q_product_form" value="A quiz embedded in a site" /> A quiz embedded in a site</label>
+              <label class="option"><input type="checkbox" name="q_product_form" value="Part of a course or community" /> Part of a course / community</label>
+              <label class="option"><input type="checkbox" name="q_product_form" value="Not sure — this is what I need help deciding" /> Not sure — help me decide</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">39</span>
+            <span class="field-label">Where should it live at launch?</span>
+            <div class="options" role="group" aria-label="Platforms">
+              <label class="option"><input type="checkbox" name="q_platforms" value="Web on desktop" /> Web on desktop</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="Mobile web" /> Mobile web</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="iOS app" /> iOS app</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="Android app" /> Android app</label>
+              <label class="option"><input type="checkbox" name="q_platforms" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">40</span>
+            <span class="field-label">Do people create an account, or is it one-and-done?</span>
+            <div class="options" role="radiogroup" aria-label="Account">
+              <label class="option"><input type="radio" name="q_account" value="One and done — no login" /> One and done — no login</label>
+              <label class="option"><input type="radio" name="q_account" value="An account so they can return" /> An account so they can return</label>
+              <label class="option"><input type="radio" name="q_account" value="Both" /> Both</label>
+              <label class="option"><input type="radio" name="q_account" value="Not sure yet" /> Not sure yet</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">41</span>
+            <span class="field-label">Where could AI help?</span>
+            <span class="field-helper">Pick all that apply.</span>
+            <div class="options" role="group" aria-label="AI role">
+              <label class="option"><input type="checkbox" name="q_ai_role" value="Generating the result or report" /> Generating the result / report</label>
+              <label class="option"><input type="checkbox" name="q_ai_role" value="The chat companion" /> The chat companion</label>
+              <label class="option"><input type="checkbox" name="q_ai_role" value="Personalizing the questions" /> Personalizing the questions</label>
+              <label class="option"><input type="checkbox" name="q_ai_role" value="Writing brand copy for users" /> Writing brand copy for users</label>
+              <label class="option"><input type="checkbox" name="q_ai_role" value="Not sure yet" /> Not sure yet</label>
+              <label class="option"><input type="checkbox" name="q_ai_role" value="Prefer no AI" /> Prefer no AI</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9 -->
+    <section class="screen form-screen" id="section-9" data-section="9">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">09 / 12</span>
+          <h2 class="section-title">Look<br /><em>and feel</em></h2>
+          <p class="section-intro">The mood, the references, the things you love and the things to avoid.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">42</span>
+            <label class="field-label" for="q_feeling">What should the product feel like to use? Three words.</label>
+            <input type="text" id="q_feeling" name="q_feeling" placeholder="e.g. warm, insightful, effortless" />
+          </div>
+          <div class="field">
+            <span class="field-number">43</span>
+            <label class="field-label" for="q_visual_refs">Products, apps, or brands whose look you admire</label>
+            <textarea id="q_visual_refs" name="q_visual_refs" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">44</span>
+            <label class="field-label" for="q_assessment_refs">Assessment or quiz products you like</label>
+            <span class="field-helper">16Personalities, CliftonStrengths, Enneagram, Marc's — what do you like about them?</span>
+            <textarea id="q_assessment_refs" name="q_assessment_refs" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">45</span>
+            <label class="field-label" for="q_avoid">Anything you definitely want to avoid?</label>
+            <textarea id="q_avoid" name="q_avoid" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">46</span>
+            <span class="field-label">Which languages should it support?</span>
+            <div class="options" role="group" aria-label="Languages">
+              <label class="option"><input type="checkbox" name="q_languages" value="English" /> English</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="Hebrew (right-to-left)" /> Hebrew (right-to-left)</label>
+              <label class="option"><input type="checkbox" name="q_languages" value="Other" /> Other</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10 -->
+    <section class="screen form-screen" id="section-10" data-section="10">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">10 / 12</span>
+          <h2 class="section-title">Business<br /><em>and model</em></h2>
+          <p class="section-intro">How the product creates value, and how that value comes back to you.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">47</span>
+            <span class="field-label">How do you imagine it making money?</span>
+            <span class="field-helper">Pick all that apply, even if you're not certain yet.</span>
+            <div class="options" role="group" aria-label="Revenue model">
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="Free assessment, paid deeper report" /> Free assessment, paid deeper report</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="Subscription" /> Subscription</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="One-time purchase" /> One-time purchase</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="Coaching upsell" /> Coaching upsell</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="A version for companies (B2B)" /> A version for companies (B2B)</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="Not decided yet" /> Not decided yet</label>
+              <label class="option"><input type="checkbox" name="q_revenue_model" value="Other" /> Other</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">48</span>
+            <label class="field-label" for="q_who_pays">Who pays, and for what?</label>
+            <textarea id="q_who_pays" name="q_who_pays" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">49</span>
+            <label class="field-label" for="q_pricing">Do you have a pricing hypothesis or range in mind?</label>
+            <span class="field-helper">Even a rough number helps.</span>
+            <textarea id="q_pricing" name="q_pricing" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">50</span>
+            <label class="field-label" for="q_b2b">Is there a company version, or is it purely for individuals?</label>
+            <textarea id="q_b2b" name="q_b2b" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11 -->
+    <section class="screen form-screen" id="section-11" data-section="11">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">11 / 12</span>
+          <h2 class="section-title">Scope, MVP<br /><em>and timeline</em></h2>
+          <p class="section-intro">What ships first, what waits, and the real-world edges.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">51</span>
+            <label class="field-label" for="q_mvp_must">The 3 to 5 things the first version cannot launch without</label>
+            <span class="field-helper">Be ruthless. If any of these are missing, it's not the product.</span>
+            <textarea id="q_mvp_must" name="q_mvp_must" rows="5" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">52</span>
+            <label class="field-label" for="q_later">What can wait for a later version?</label>
+            <textarea id="q_later" name="q_later" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">53</span>
+            <span class="field-label">Do you have a target launch timeline?</span>
+            <div class="options" role="radiogroup" aria-label="Timeline">
+              <label class="option"><input type="radio" name="q_timeline" value="As soon as possible" /> As soon as possible</label>
+              <label class="option"><input type="radio" name="q_timeline" value="Within 3 months" /> Within 3 months</label>
+              <label class="option"><input type="radio" name="q_timeline" value="Within 6 months" /> Within 6 months</label>
+              <label class="option"><input type="radio" name="q_timeline" value="Within a year" /> Within a year</label>
+              <label class="option"><input type="radio" name="q_timeline" value="Flexible" /> Flexible</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">54</span>
+            <label class="field-label" for="q_deadline">Any hard date driving this?</label>
+            <span class="field-helper">An event, a talk, a book, a season. Optional.</span>
+            <textarea id="q_deadline" name="q_deadline" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">55</span>
+            <span class="field-label">How do you imagine us working together on the financial side?</span>
+            <span class="field-helper">No single right answer. Pick what feels right, or more than one. We'll find the best fit on our call.</span>
+            <div class="options" role="group" aria-label="Engagement model">
+              <label class="option"><input type="checkbox" name="q_investment" value="Per project — one price for a defined scope" /> Per project</label>
+              <label class="option"><input type="checkbox" name="q_investment" value="By phase — pay as the work progresses" /> By phase</label>
+              <label class="option"><input type="checkbox" name="q_investment" value="Hours pack — prepurchased blocks of hours" /> Hours pack</label>
+              <label class="option"><input type="checkbox" name="q_investment" value="Monthly retainer — ongoing partnership" /> Monthly retainer</label>
+              <label class="option"><input type="checkbox" name="q_investment" value="Not sure, would appreciate a recommendation" /> Not sure — recommend</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">56</span>
+            <label class="field-label" for="q_budget">Do you have a budget range in mind?</label>
+            <span class="field-helper">Optional, but it helps us shape the right scope.</span>
+            <textarea id="q_budget" name="q_budget" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Next <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12 -->
+    <section class="screen form-screen" id="section-12" data-section="12">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">12 / 12</span>
+          <h2 class="section-title">Working<br /><em>together</em></h2>
+          <p class="section-intro">What kind of help you're looking for, and how you like to collaborate.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="block">
+          <div class="field">
+            <span class="field-number">57</span>
+            <span class="field-label">What kind of help are you looking for?</span>
+            <span class="field-helper">Pick everything that sounds relevant.</span>
+            <div class="options" role="group" aria-label="Help type">
+              <label class="option"><input type="checkbox" name="q_help_type" value="Strategy and product definition" /> Strategy & product definition</label>
+              <label class="option"><input type="checkbox" name="q_help_type" value="Design" /> Design</label>
+              <label class="option"><input type="checkbox" name="q_help_type" value="Build the MVP" /> Build the MVP</label>
+              <label class="option"><input type="checkbox" name="q_help_type" value="Full product build" /> Full product build</label>
+              <label class="option"><input type="checkbox" name="q_help_type" value="The AI parts" /> The AI parts</label>
+              <label class="option"><input type="checkbox" name="q_help_type" value="Ongoing partnership and advisory" /> Ongoing partnership</label>
+              <label class="option"><input type="checkbox" name="q_help_type" value="Not sure, want a recommendation" /> Not sure — recommend</label>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field-number">58</span>
+            <label class="field-label" for="q_decision_maker">Who has final say on scope and budget?</label>
+            <textarea id="q_decision_maker" name="q_decision_maker" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">59</span>
+            <label class="field-label" for="q_collaboration">How do you prefer to collaborate?</label>
+            <span class="field-helper">Weekly calls, async messaging, milestone reviews, fully embedded?</span>
+            <textarea id="q_collaboration" name="q_collaboration" rows="3" placeholder="Type your answer"></textarea>
+          </div>
+          <div class="field">
+            <span class="field-number">60</span>
+            <label class="field-label" for="q_anything_else">Anything else you want us to know before we talk?</label>
+            <textarea id="q_anything_else" name="q_anything_else" rows="4" placeholder="Type your answer"></textarea>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="cta" data-action="next" type="button">Review &amp; send <span class="cta-arrow">&rarr;</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEW SCREEN -->
+    <section class="screen form-screen" id="review" data-section="13">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-number">Almost done</span>
+          <h2 class="section-title">That's it.<br /><em>Thank you.</em></h2>
+          <p class="section-intro">When you're ready, send your answers straight to us. We'll read every one before our call and come back with a clear direction and a tailored next step.</p>
+          <button class="back-link" data-action="back" type="button"><span class="back-link-arrow">&larr;</span> Back</button>
+        </header>
+
+        <div class="review-stats">
+          <div class="stat">
+            <span class="stat-value" id="stat-answered">0</span>
+            <span class="stat-label">Answered</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="stat-total">60</span>
+            <span class="stat-label">Total questions</span>
+          </div>
+        </div>
+
+        <div class="cta-row" id="submit-row">
+          <button class="cta" id="submit-btn" type="button">
+            Send my answers
+            <span class="cta-arrow">&rarr;</span>
+          </button>
+          <button class="back-link" id="download-btn" type="button" style="margin-top:0;">Save a copy</button>
+        </div>
+        <p class="review-note" id="review-note"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- THANK-YOU OVERLAY -->
+  <div class="overlay" id="thanks-overlay" aria-hidden="true">
+    <div class="overlay-card">
+      <h2 class="overlay-title">Received.<br /><em>Thank you, Michal.</em></h2>
+      <p class="overlay-body">Your answers are with us. We'll read everything carefully and come back with a point of view, the open questions, and a suggested next step.</p>
+      <p class="overlay-meta">You can close this window</p>
+    </div>
+  </div>
+
+  <script>
+    /* ════════════════════════════════════════════════════════════════
+       GOOGLE FORM CONNECTION
+       Run build-google-form.gs in Apps Script, then paste the two
+       values it prints below (replace the empty defaults).
+       Until you do, "Send my answers" falls back to Save-a-copy + email.
+       ════════════════════════════════════════════════════════════════ */
+    const FORM_ACTION_URL = '';   // e.g. 'https://docs.google.com/forms/d/e/XXXX/formResponse'
+    const FORM_ENTRY_MAP = {};    // e.g. { "q_full_name": "entry.123", ... }
+    const VIKA_EMAIL = 'finkeldesign@gmail.com';
+
+    const STORAGE_KEY = 'michal_discovery_v1';
+    const TOTAL_SECTIONS = 12;
+    const CLIENT_NAME = 'Michal';
+    const CLIENT_FIRST_NAME = 'Michal';
+
+    const greetingNameEl = document.getElementById('greeting-name');
+    if (greetingNameEl) greetingNameEl.textContent = CLIENT_FIRST_NAME;
+
+    const MANIFEST = [
+      { number: 1, title: 'About you and the vision', fields: [
+        { name: 'q_full_name', label: 'Your full name' },
+        { name: 'q_role', label: 'Your role or title' },
+        { name: 'q_email', label: 'Email' },
+        { name: 'q_location', label: 'Country and city' },
+        { name: 'q_one_line', label: 'In one line, what do you want to build?' },
+        { name: 'q_spark', label: 'What sparked this idea?' },
+        { name: 'q_why_underdeveloped', label: "What's missing in this space today?" },
+        { name: 'q_why_now', label: 'Why now?' },
+      ]},
+      { number: 2, title: 'The concept', fields: [
+        { name: 'q_what_is_it', label: 'In your own words, what is a personal brand assessment?' },
+        { name: 'q_user_walks_away', label: 'What do they walk away with?' },
+        { name: 'q_transformation', label: 'What changes for them after using it?' },
+        { name: 'q_one_sentence_user', label: 'One sentence a user would tell a friend' },
+        { name: 'q_flavour', label: "A person's 'flavour' — who they are, not just what they do" },
+        { name: 'q_scope_depth', label: 'How much career vs whole person?' },
+        { name: 'q_principles', label: 'Deeper parts of a person it should reflect' },
+      ]},
+      { number: 3, title: 'Learning from Marc', fields: [
+        { name: 'q_marc_what_worked', label: "What about Marc's work resonates most with you?" },
+        { name: 'q_marc_borrow', label: 'What do you want to learn or borrow from him?' },
+        { name: 'q_marc_relationship', label: 'How is Marc involved?' },
+        { name: 'q_marc_ip', label: 'Whose methodology sits at the core?' },
+        { name: 'q_your_framework', label: 'Do you have your own framework or archetypes in mind?' },
+      ]},
+      { number: 4, title: 'The assessment itself', fields: [
+        { name: 'q_format_type', label: 'Which best describes the core experience?' },
+        { name: 'q_num_questions', label: 'Roughly how many questions?' },
+        { name: 'q_input_style', label: 'How do people answer?' },
+        { name: 'q_visual_or_textual', label: 'More visual or more textual?' },
+        { name: 'q_archetype_style', label: 'Sort people into named types or archetypes?' },
+      ]},
+      { number: 5, title: 'The result they get', fields: [
+        { name: 'q_result_form', label: 'What does the result look like?' },
+        { name: 'q_result_depth', label: 'How deep is the result?' },
+        { name: 'q_result_shareable', label: 'Should results be shareable?' },
+        { name: 'q_result_example', label: 'The perfect end-screen' },
+      ]},
+      { number: 6, title: 'The AI companion', fields: [
+        { name: 'q_chat_include', label: 'Do you want a chat companion?' },
+        { name: 'q_chat_identity', label: 'Whose identity would it speak as?' },
+        { name: 'q_chat_purpose', label: 'What should people do in that chat?' },
+      ]},
+      { number: 7, title: "Who it's for", fields: [
+        { name: 'q_primary_user', label: 'Describe your primary user' },
+        { name: 'q_user_moment', label: "What's happening in their life that brings them here?" },
+        { name: 'q_user_knowledge', label: 'How well do you know these users?' },
+        { name: 'q_secondary_user', label: 'Any secondary or adjacent audience?' },
+        { name: 'q_reach', label: 'Where do they gather, how will you reach them?' },
+      ]},
+      { number: 8, title: 'Format and platform', fields: [
+        { name: 'q_product_form', label: 'When you picture the product, what is it?' },
+        { name: 'q_platforms', label: 'Where should it live at launch?' },
+        { name: 'q_account', label: 'Account, or one-and-done?' },
+        { name: 'q_ai_role', label: 'Where could AI help?' },
+      ]},
+      { number: 9, title: 'Look and feel', fields: [
+        { name: 'q_feeling', label: 'Three words for how it should feel' },
+        { name: 'q_visual_refs', label: 'Brands whose look you admire' },
+        { name: 'q_assessment_refs', label: 'Assessment products you like' },
+        { name: 'q_avoid', label: 'Anything to avoid?' },
+        { name: 'q_languages', label: 'Languages to support' },
+      ]},
+      { number: 10, title: 'Business and model', fields: [
+        { name: 'q_revenue_model', label: 'How it makes money' },
+        { name: 'q_who_pays', label: 'Who pays, and for what?' },
+        { name: 'q_pricing', label: 'Pricing hypothesis or range' },
+        { name: 'q_b2b', label: 'Company version or individuals only?' },
+      ]},
+      { number: 11, title: 'Scope, MVP and timeline', fields: [
+        { name: 'q_mvp_must', label: 'The 3 to 5 launch must-haves' },
+        { name: 'q_later', label: 'What can wait?' },
+        { name: 'q_timeline', label: 'Target launch timeline' },
+        { name: 'q_deadline', label: 'Any hard date driving this?' },
+        { name: 'q_investment', label: 'How to work together financially' },
+        { name: 'q_budget', label: 'Budget range in mind' },
+      ]},
+      { number: 12, title: 'Working together', fields: [
+        { name: 'q_help_type', label: 'Kind of help you are looking for' },
+        { name: 'q_decision_maker', label: 'Final say on scope and budget' },
+        { name: 'q_collaboration', label: 'How you prefer to collaborate' },
+        { name: 'q_anything_else', label: 'Anything else before we talk' },
+      ]},
+    ];
+
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { state = {}; }
+
+    function restoreInputs() {
+      Object.entries(state).forEach(([key, value]) => {
+        const els = document.querySelectorAll('[name="' + key + '"]');
+        els.forEach(el => {
+          if (el.type === 'radio') {
+            el.checked = el.value === value;
+          } else if (el.type === 'checkbox') {
+            if (Array.isArray(value)) el.checked = value.includes(el.value);
+          } else {
+            el.value = value;
+          }
+        });
+      });
+    }
+
+    function saveInput(e) {
+      const el = e.target;
+      if (!el.name) return;
+      if (el.type === 'radio') {
+        if (el.checked) state[el.name] = el.value;
+      } else if (el.type === 'checkbox') {
+        if (!state[el.name] || !Array.isArray(state[el.name])) state[el.name] = [];
+        if (el.checked) {
+          if (!state[el.name].includes(el.value)) state[el.name].push(el.value);
+        } else {
+          state[el.name] = state[el.name].filter(v => v !== el.value);
+        }
+      } else {
+        state[el.name] = el.value;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    document.addEventListener('input', saveInput);
+    document.addEventListener('change', saveInput);
+
+    function showScreen(id) {
+      const target = document.getElementById(id);
+      if (!target) { alert('That section is not built yet.'); return; }
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      updateProgress(id);
+      if (id === 'review') updateReviewStats();
+    }
+
+    function updateProgress(id) {
+      const fill = document.querySelector('.progress-fill');
+      if (!fill) return;
+      if (id === 'lobby') { fill.style.width = '0%'; return; }
+      if (id === 'review') { fill.style.width = '100%'; return; }
+      const match = id.match(/section-(\d+)/);
+      if (!match) return;
+      const n = parseInt(match[1], 10);
+      fill.style.width = ((n / TOTAL_SECTIONS) * 100) + '%';
+    }
+
+    function countAnswered() {
+      let answered = 0, total = 0;
+      MANIFEST.forEach(s => s.fields.forEach(f => {
+        total++;
+        const v = state[f.name];
+        if (v === undefined || v === null || v === '') return;
+        if (Array.isArray(v) && v.length === 0) return;
+        answered++;
+      }));
+      return { answered, total };
+    }
+
+    function updateReviewStats() {
+      const { answered, total } = countAnswered();
+      const a = document.getElementById('stat-answered');
+      const t = document.getElementById('stat-total');
+      if (a) a.textContent = answered;
+      if (t) t.textContent = total;
+    }
+
+    function generateMarkdown() {
+      const today = new Date().toISOString().split('T')[0];
+      const { answered, total } = countAnswered();
+      let md = '# Discovery Questionnaire\n';
+      md += '## ' + CLIENT_NAME + '\n\n';
+      md += '*Completed ' + today + '. ' + answered + ' of ' + total + ' questions answered.*\n\n';
+      MANIFEST.forEach(s => {
+        const num = String(s.number).padStart(2, '0');
+        md += '\n## ' + num + '. ' + s.title + '\n\n';
+        s.fields.forEach(f => {
+          md += '### ' + f.label + '\n\n';
+          const v = state[f.name];
+          if (v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0)) {
+            md += '_Not answered_\n\n';
+          } else if (Array.isArray(v)) {
+            v.forEach(item => { md += '- ' + item + '\n'; });
+            md += '\n';
+          } else {
+            md += v + '\n\n';
+          }
+        });
+      });
+      return md;
+    }
+
+    function downloadMarkdown() {
+      const md = generateMarkdown();
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const today = new Date().toISOString().split('T')[0];
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = CLIENT_NAME.toLowerCase() + '-discovery-' + today + '.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function showThanks() {
+      document.body.classList.add('overlay-open');
+      document.getElementById('thanks-overlay').classList.add('visible');
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    }
+
+    function isGoogleConnected() {
+      return FORM_ACTION_URL && Object.keys(FORM_ENTRY_MAP).length > 0;
+    }
+
+    function submitToGoogle() {
+      const btn = document.getElementById('submit-btn');
+      const note = document.getElementById('review-note');
+
+      if (!isGoogleConnected()) {
+        // Fallback: save a copy and open an email to Vika.
+        downloadMarkdown();
+        const subject = encodeURIComponent('Discovery answers from Michal');
+        const body = encodeURIComponent('Hi Vika,\n\nAttaching my answers to the discovery questionnaire.\n\n');
+        window.location.href = 'mailto:' + VIKA_EMAIL + '?subject=' + subject + '&body=' + body;
+        if (note) note.textContent = 'Your answers were saved to your Downloads folder. Please attach that file to the email that just opened.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.firstChild.textContent = 'Sending… ';
+
+      const fd = new FormData();
+      Object.keys(FORM_ENTRY_MAP).forEach(name => {
+        const entry = FORM_ENTRY_MAP[name];
+        const v = state[name];
+        if (v === undefined || v === null || v === '') return;
+        if (Array.isArray(v)) v.forEach(item => fd.append(entry, item));
+        else fd.append(entry, v);
+      });
+
+      fetch(FORM_ACTION_URL, { method: 'POST', mode: 'no-cors', body: fd })
+        .then(showThanks)
+        .catch(showThanks);
+    }
+
+    document.getElementById('begin-btn').addEventListener('click', () => showScreen('section-1'));
+    document.getElementById('submit-btn').addEventListener('click', submitToGoogle);
+    document.getElementById('download-btn').addEventListener('click', downloadMarkdown);
+
+    document.querySelectorAll('[data-action="next"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = btn.closest('.screen');
+        const n = parseInt(current.dataset.section, 10);
+        if (n >= TOTAL_SECTIONS) showScreen('review');
+        else showScreen('section-' + (n + 1));
+      });
+    });
+
+    document.querySelectorAll('[data-action="back"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = btn.closest('.screen');
+        const n = parseInt(current.dataset.section, 10);
+        if (n === 13) showScreen('section-12');
+        else if (n <= 1) showScreen('lobby');
+        else showScreen('section-' + (n - 1));
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const tag = e.target && e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+      if (e.key === 'ArrowRight') {
+        const next = document.querySelector('.screen.active [data-action="next"]');
+        if (next) { e.preventDefault(); next.click(); }
+      } else if (e.key === 'ArrowLeft') {
+        const back = document.querySelector('.screen.active [data-action="back"]');
+        if (back) { e.preventDefault(); back.click(); }
+      }
+    });
+
+    restoreInputs();
+    showScreen('lobby');
+  </script>
+</body>
+</html>
